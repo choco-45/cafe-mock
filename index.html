@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <title>CAFE — Workshop Mock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@300;400;500;600;700&family=Shippori+Mincho:wght@400;600;800&display=swap" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+  <style>
+    /* ===== CSS CUSTOM PROPERTIES ===== */
+    :root {
+      color-scheme: light;
+      --bg: #faf8f5;
+      --text: #2c2c2c;
+      --heading: #1a1a1a;
+      --accent: #8b6f47;
+      --border: #e0d9d0;
+      --footer-bg: #1a1a1a;
+      --font-heading: 'Fraunces', Georgia, serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --base-size: 16px;
+      --heading-weight: 500;
+      --heading-spacing: 0em;
+      --logo-spacing: 0.04em;
+      --content-width: 1000px;
+      --section-pad: 6rem;
+      --radius: 8px;
+      --hero-height: 560px;
+      --hero-grayscale: 20%;
+      --hero-darkness: 0.4;
+      --hero-align: center;
+      --menu-separator: dashed;
+      --menu-lh: 2;
+      --card-opacity: 1;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background-color: var(--bg) !important;
+      color: var(--text) !important;
+      font-family: var(--font-body);
+      font-size: var(--base-size);
+      line-height: 1.7;
+    }
+
+    /* NAV */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(250,248,245,0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: var(--logo-spacing);
+      color: var(--heading);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text);
+      text-decoration: none;
+      opacity: 0.75;
+      transition: opacity 0.2s;
+    }
+    .nav-links a:hover { opacity: 1; }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      height: var(--hero-height);
+      overflow: hidden;
+      display: flex;
+      align-items: var(--hero-align);
+      justify-content: center;
+    }
+    .hero-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(var(--hero-grayscale));
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,var(--hero-darkness)));
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: #fff;
+      padding: 2rem;
+      max-width: 720px;
+    }
+    .hero-kicker {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      opacity: 0.85;
+      margin-bottom: 1.2rem;
+      font-family: var(--font-body);
+    }
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2.8rem, 6vw, 5.2rem);
+      font-weight: var(--heading-weight);
+      letter-spacing: var(--heading-spacing);
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title em { font-style: italic; }
+    .hero-sub {
+      font-size: 1rem;
+      opacity: 0.88;
+      font-family: var(--font-body);
+    }
+
+    /* NOTICE BANNER */
+    .notice-banner {
+      background: var(--bg);
+      color: var(--text);
+      text-align: center;
+      font-size: 0.68rem;
+      padding: 0.5rem 1rem;
+      opacity: 0.65;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* SECTIONS */
+    .section {
+      padding: var(--section-pad) 2rem;
+      max-width: var(--content-width);
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+      font-family: var(--font-body);
+    }
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: var(--heading-weight);
+      letter-spacing: var(--heading-spacing);
+      color: var(--heading);
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .section-title .num {
+      font-size: 0.55em;
+      opacity: 0.4;
+      margin-right: 0.6rem;
+      font-family: var(--font-body);
+      font-weight: 400;
+    }
+    .section-title .ja {
+      font-size: 0.52em;
+      opacity: 0.5;
+      margin-left: 0.8rem;
+      font-family: 'Shippori Mincho', serif;
+      font-weight: 400;
+    }
+
+    /* ABOUT */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+    .about-text p { margin-bottom: 1.1rem; opacity: 0.82; line-height: 1.8; }
+    .about-text .addr {
+      font-size: 0.78rem;
+      opacity: 0.5;
+      margin-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+    .about-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      border-radius: var(--radius);
+      filter: grayscale(var(--hero-grayscale));
+    }
+
+    /* MENU */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .menu-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      opacity: var(--card-opacity);
+      background: var(--bg);
+    }
+    .menu-card-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: var(--heading-weight);
+      color: var(--heading);
+      margin-bottom: 0.2rem;
+    }
+    .menu-card-kicker {
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+      font-variant: small-caps;
+    }
+    .menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      line-height: var(--menu-lh);
+      font-size: 0.875rem;
+      gap: 0.3rem;
+    }
+    .menu-dots {
+      flex: 1;
+      border-bottom: 1px var(--menu-separator) var(--border);
+      margin: 0 0.3rem;
+      align-self: center;
+      min-width: 1rem;
+    }
+    .menu-price {
+      white-space: nowrap;
+      color: var(--accent);
+      font-size: 0.78rem;
+    }
+
+    /* HOURS */
+    .hours-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+    .hours-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+    .hours-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.88rem;
+    }
+    .hours-row:last-child { border-bottom: none; }
+    .hours-day { opacity: 0.62; }
+    .hours-note {
+      background: var(--accent);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      font-size: 0.875rem;
+    }
+    .hours-note h3 {
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      font-weight: 500;
+    }
+    .hours-note p { opacity: 0.9; line-height: 1.7; }
+
+    /* ACCESS */
+    .access-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    .info-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.3rem;
+    }
+    .info-card-icon { font-size: 1.4rem; margin-bottom: 0.6rem; }
+    .info-card-title {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .info-card-text {
+      font-size: 0.83rem;
+      line-height: 1.65;
+      opacity: 0.82;
+    }
+
+    /* FOOTER */
+    .footer {
+      background: var(--footer-bg);
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+      padding: 3.5rem 2rem;
+    }
+    .footer-brand {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      color: #fff;
+      letter-spacing: var(--logo-spacing);
+      margin-bottom: 0.6rem;
+    }
+    .footer-msg { font-size: 0.85rem; margin-bottom: 1.2rem; opacity: 0.65; }
+    .footer-note {
+      font-size: 0.67rem;
+      opacity: 0.42;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 1.2rem;
+      margin-top: 1rem;
+    }
+
+    /* DIVIDER */
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      max-width: var(--content-width);
+      margin: 0 auto;
+    }
+
+    /* TWEAKS PANEL */
+    #tweaks-root {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 1000;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .menu-grid { grid-template-columns: 1fr; }
+      .about-grid { grid-template-columns: 1fr; }
+      .access-grid { grid-template-columns: repeat(2, 1fr); }
+      .hours-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .nav-links { gap: 1rem; }
+      .access-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#" class="nav-brand">CAFE</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#hours">Hours</a></li>
+    <li><a href="#access">Access</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <img src="images/cafe_image.jpg" alt="Cafe interior" class="hero-img">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-kicker" id="hero-kicker">Workshop Mock — 練習用モック</p>
+    <h1 class="hero-title" id="hero-title">A place to<br><em>pause</em> and<br>breathe</h1>
+    <p class="hero-sub" id="hero-sub">Specialty coffee &amp; seasonal food, every day.</p>
+  </div>
+</section>
+
+<!-- NOTICE BANNER -->
+<div class="notice-banner">
+  ⚠️ 実在の店舗とは関係ありません — This is a fictional mock for workshop / educational use only.
+</div>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <p class="section-label">01 / About</p>
+  <h2 class="section-title">
+    <span class="num">—</span>Our Story<span class="ja">私たちについて</span>
+  </h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>このページは練習用のモックホームページです。実在のカフェやブランドを表すものではありません。デザインの学習・ワークショップ用としてご利用ください。</p>
+      <p>This mock homepage is created for educational and workshop purposes only. It demonstrates a modern café website design with adjustable styles via the Tweaks panel in the bottom-right corner.</p>
+      <p>右下の <strong>✦ Tweaks</strong> ボタンを押すと、色・フォント・レイアウトをリアルタイムで調整できます。</p>
+      <p class="addr">〒000-0000 ○○区××町 0-0-0 &nbsp;／&nbsp; TEL: 00-0000-0000</p>
+    </div>
+    <img src="images/cafe_image.jpg" alt="Cafe interior" class="about-img">
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- MENU -->
+<section class="section" id="menu">
+  <p class="section-label">02 / Menu</p>
+  <h2 class="section-title">
+    <span class="num">—</span>What We Offer<span class="ja">メニュー</span>
+  </h2>
+  <div class="menu-grid">
+    <div class="menu-card">
+      <h3 class="menu-card-title">Coffee</h3>
+      <p class="menu-card-kicker">Specialty Drinks</p>
+      <div class="menu-item"><span>Espresso</span><span class="menu-dots"></span><span class="menu-price">¥400</span></div>
+      <div class="menu-item"><span>Americano</span><span class="menu-dots"></span><span class="menu-price">¥450</span></div>
+      <div class="menu-item"><span>Cappuccino</span><span class="menu-dots"></span><span class="menu-price">¥500</span></div>
+      <div class="menu-item"><span>Café Latte</span><span class="menu-dots"></span><span class="menu-price">¥520</span></div>
+      <div class="menu-item"><span>Filter Coffee</span><span class="menu-dots"></span><span class="menu-price">¥480</span></div>
+    </div>
+    <div class="menu-card">
+      <h3 class="menu-card-title">Other Drinks</h3>
+      <p class="menu-card-kicker">Non-Coffee Options</p>
+      <div class="menu-item"><span>Tea (Hot / Iced)</span><span class="menu-dots"></span><span class="menu-price">¥450</span></div>
+      <div class="menu-item"><span>Matcha Latte</span><span class="menu-dots"></span><span class="menu-price">¥520</span></div>
+      <div class="menu-item"><span>Lemonade</span><span class="menu-dots"></span><span class="menu-price">¥480</span></div>
+      <div class="menu-item"><span>Sparkling Water</span><span class="menu-dots"></span><span class="menu-price">¥350</span></div>
+      <div class="menu-item"><span>Seasonal Juice</span><span class="menu-dots"></span><span class="menu-price">¥500</span></div>
+    </div>
+    <div class="menu-card">
+      <h3 class="menu-card-title">Food</h3>
+      <p class="menu-card-kicker">Light Bites</p>
+      <div class="menu-item"><span>Toast Set</span><span class="menu-dots"></span><span class="menu-price">¥380</span></div>
+      <div class="menu-item"><span>Bagel</span><span class="menu-dots"></span><span class="menu-price">¥520</span></div>
+      <div class="menu-item"><span>Scone</span><span class="menu-dots"></span><span class="menu-price">¥420</span></div>
+      <div class="menu-item"><span>Cake of the Day</span><span class="menu-dots"></span><span class="menu-price">¥550</span></div>
+      <div class="menu-item"><span>Sandwich</span><span class="menu-dots"></span><span class="menu-price">¥680</span></div>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- HOURS -->
+<section class="section" id="hours">
+  <p class="section-label">03 / Hours</p>
+  <h2 class="section-title">
+    <span class="num">—</span>Opening Hours<span class="ja">営業時間</span>
+  </h2>
+  <div class="hours-grid">
+    <div class="hours-card">
+      <div class="hours-row"><span class="hours-day">月曜日 Mon</span><span>08:00 – 18:00</span></div>
+      <div class="hours-row"><span class="hours-day">火曜日 Tue</span><span>08:00 – 18:00</span></div>
+      <div class="hours-row"><span class="hours-day">水曜日 Wed</span><span>08:00 – 18:00</span></div>
+      <div class="hours-row"><span class="hours-day">木曜日 Thu</span><span>08:00 – 18:00</span></div>
+      <div class="hours-row"><span class="hours-day">金曜日 Fri</span><span>08:00 – 20:00</span></div>
+      <div class="hours-row"><span class="hours-day">土曜日 Sat</span><span>09:00 – 20:00</span></div>
+      <div class="hours-row"><span class="hours-day">日曜日 Sun</span><span>09:00 – 17:00</span></div>
+    </div>
+    <div class="hours-note">
+      <h3>定休日について</h3>
+      <p>毎月第3月曜日は定休日となります。祝日は通常通り営業いたします。</p>
+      <p style="margin-top:1rem;font-size:0.78rem;opacity:0.85;">※ 臨時休業の際はSNSにてお知らせいたします。</p>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- ACCESS -->
+<section class="section" id="access">
+  <p class="section-label">04 / Access</p>
+  <h2 class="section-title">
+    <span class="num">—</span>Find Us<span class="ja">アクセス</span>
+  </h2>
+  <div class="access-grid">
+    <div class="info-card">
+      <div class="info-card-icon">🚉</div>
+      <div class="info-card-title">最寄り駅</div>
+      <div class="info-card-text">○○線「××駅」<br>徒歩 約0分</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-icon">🚗</div>
+      <div class="info-card-title">駐車場</div>
+      <div class="info-card-text">近隣にコインパーキングあり<br>店舗専用駐車場なし</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-icon">💳</div>
+      <div class="info-card-title">お支払い</div>
+      <div class="info-card-text">現金・クレジットカード<br>電子マネー対応</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-icon">ℹ️</div>
+      <div class="info-card-title">ご案内</div>
+      <div class="info-card-text">〒000-0000<br>○○区××町 0-0-0<br>TEL: 00-0000-0000</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-brand">CAFE</div>
+  <p class="footer-msg">A warm space for coffee and conversation.</p>
+  <div class="footer-note">
+    ⚠️ 実在の店舗とは関係ありません。This is a fictional mock for workshop / educational use only.<br>
+    © 2026 Cafe Mock — Workshop Practice
+  </div>
+</footer>
+
+<!-- TWEAKS PANEL ROOT -->
+<div id="tweaks-root"></div>
+
+<!-- ============================================================
+     INLINE REACT + TWEAKS PANEL
+     すべてここに書いてあるのでファイル分割不要！
+     ============================================================ -->
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+
+// TWEAK_DEFAULTS
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/ {
+  palette:        'classic',
+  bgColor:        '#faf8f5',
+  textColor:      '#2c2c2c',
+  headingColor:   '#1a1a1a',
+  accentColor:    '#8b6f47',
+  borderColor:    '#e0d9d0',
+  footerBg:       '#1a1a1a',
+  fontPair:       'serif-sans',
+  baseSize:       16,
+  headingWeight:  500,
+  headingSpacing: 0,
+  logoSpacing:    4,
+  contentWidth:   1000,
+  sectionPad:     6,
+  radius:         8,
+  heroHeight:     560,
+  heroGrayscale:  20,
+  heroDarkness:   40,
+  heroAlign:      'center',
+  heroKicker:     'Workshop Mock — 練習用モック',
+  heroTitle:      'A place to\npause and\nbreathe',
+  heroSub:        'Specialty coffee & seasonal food, every day.',
+  menuSeparator:  'dashed',
+  menuLineHeight: 2,
+  cardOpacity:    1,
+}; /* EDITMODE-END */
+
+const PALETTES = {
+  classic: { bgColor:'#faf8f5', textColor:'#2c2c2c', headingColor:'#1a1a1a', accentColor:'#8b6f47', borderColor:'#e0d9d0', footerBg:'#1a1a1a' },
+  cream:   { bgColor:'#fffbf0', textColor:'#3d3530', headingColor:'#2a2218', accentColor:'#c49a3c', borderColor:'#e8dfc8', footerBg:'#2a2218' },
+  mist:    { bgColor:'#f0f4f8', textColor:'#2d3748', headingColor:'#1a202c', accentColor:'#5a8fa0', borderColor:'#cbd5e0', footerBg:'#1a202c' },
+  moss:    { bgColor:'#f2f5f0', textColor:'#2d3424', headingColor:'#1a2418', accentColor:'#5a7a3a', borderColor:'#c8d5c0', footerBg:'#1a2418' },
+  dark:    { bgColor:'#1a1a1a', textColor:'#e8e4df', headingColor:'#ffffff', accentColor:'#c49a3c', borderColor:'#333333', footerBg:'#0a0a0a' },
+};
+
+const FONT_PAIRS = {
+  'serif-sans': { h:"'Fraunces', Georgia, serif",       b:"'Inter', system-ui, sans-serif" },
+  'serif':      { h:"'Fraunces', Georgia, serif",       b:"'Fraunces', Georgia, serif" },
+  'sans':       { h:"'Inter', system-ui, sans-serif",   b:"'Inter', system-ui, sans-serif" },
+  'mincho':     { h:"'Shippori Mincho', serif",         b:"'Inter', system-ui, sans-serif" },
+};
+
+/* ---- useTweaks hook ---- */
+function useTweaks() {
+  const stored = (() => { try { return JSON.parse(localStorage.getItem('cafe-tweaks') || '{}'); } catch { return {}; } })();
+  const [tweaks, setTweaks] = useState({ ...TWEAK_DEFAULTS, ...stored });
+
+  const apply = useCallback((t) => {
+    const r = document.documentElement.style;
+    r.setProperty('--bg',              t.bgColor);
+    r.setProperty('--text',            t.textColor);
+    r.setProperty('--heading',         t.headingColor);
+    r.setProperty('--accent',          t.accentColor);
+    r.setProperty('--border',          t.borderColor);
+    r.setProperty('--footer-bg',       t.footerBg);
+    r.setProperty('--base-size',       t.baseSize + 'px');
+    r.setProperty('--heading-weight',  t.headingWeight);
+    r.setProperty('--heading-spacing', (t.headingSpacing / 100) + 'em');
+    r.setProperty('--logo-spacing',    (t.logoSpacing / 100) + 'em');
+    r.setProperty('--content-width',   t.contentWidth + 'px');
+    r.setProperty('--section-pad',     t.sectionPad + 'rem');
+    r.setProperty('--radius',          t.radius + 'px');
+    r.setProperty('--hero-height',     t.heroHeight + 'px');
+    r.setProperty('--hero-grayscale',  t.heroGrayscale + '%');
+    r.setProperty('--hero-darkness',   t.heroDarkness / 100);
+    r.setProperty('--menu-separator',  t.menuSeparator);
+    r.setProperty('--menu-lh',         t.menuLineHeight);
+    r.setProperty('--card-opacity',    t.cardOpacity);
+    const heroAlignMap = { top:'flex-start', center:'center', bottom:'flex-end' };
+    r.setProperty('--hero-align', heroAlignMap[t.heroAlign] || 'center');
+    const fp = FONT_PAIRS[t.fontPair] || FONT_PAIRS['serif-sans'];
+    r.setProperty('--font-heading', fp.h);
+    r.setProperty('--font-body',    fp.b);
+    // Hero text
+    const kicker = document.getElementById('hero-kicker');
+    const title  = document.getElementById('hero-title');
+    const sub    = document.getElementById('hero-sub');
+    if (kicker) kicker.textContent = t.heroKicker;
+    if (title)  title.innerHTML    = t.heroTitle.replace(/\n/g, '<br>');
+    if (sub)    sub.textContent    = t.heroSub;
+    // body override
+    document.body.style.setProperty('background-color', t.bgColor, 'important');
+    document.body.style.setProperty('color', t.textColor, 'important');
+  }, []);
+
+  useEffect(() => {
+    apply(tweaks);
+    try { localStorage.setItem('cafe-tweaks', JSON.stringify(tweaks)); } catch {}
+  }, [tweaks, apply]);
+
+  const update = (key, val) => {
+    setTweaks(prev => {
+      const next = { ...prev, [key]: val };
+      if (key === 'palette' && PALETTES[val]) Object.assign(next, PALETTES[val]);
+      return next;
+    });
+  };
+
+  const reset = () => {
+    try { localStorage.removeItem('cafe-tweaks'); } catch {}
+    setTweaks({ ...TWEAK_DEFAULTS });
+  };
+
+  return { tweaks, update, reset };
+}
+
+/* ---- UI Parts ---- */
+function Slider({ label, min, max, step=1, value, onChange, unit='' }) {
+  return (
+    <div style={{ marginBottom:'0.7rem' }}>
+      <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.68rem', marginBottom:'0.2rem', opacity:0.65 }}>
+        <span>{label}</span><span style={{fontVariantNumeric:'tabular-nums'}}>{value}{unit}</span>
+      </div>
+      <input type="range" min={min} max={max} step={step} value={value}
+        onChange={e => onChange(Number(e.target.value))}
+        style={{ width:'100%', accentColor:'#8b6f47', cursor:'pointer' }} />
+    </div>
+  );
+}
+
+function ColorRow({ label, value, onChange }) {
+  return (
+    <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', marginBottom:'0.45rem' }}>
+      <input type="color" value={value} onChange={e => onChange(e.target.value)}
+        style={{ width:'26px', height:'26px', border:'1px solid #ddd', borderRadius:'4px', cursor:'pointer', padding:'1px', background:'none' }} />
+      <span style={{ fontSize:'0.7rem', opacity:0.75 }}>{label}</span>
+      <span style={{ fontSize:'0.63rem', opacity:0.4, marginLeft:'auto', fontVariantNumeric:'tabular-nums' }}>{value}</span>
+    </div>
+  );
+}
+
+function Accordion({ title, children, defaultOpen=true }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div style={{ marginBottom:'0.4rem', borderBottom:'1px solid rgba(0,0,0,0.07)', paddingBottom:'0.7rem' }}>
+      <button onClick={() => setOpen(!open)}
+        style={{ width:'100%', textAlign:'left', background:'none', border:'none', cursor:'pointer',
+                 padding:'0.2rem 0', fontWeight:700, fontSize:'0.66rem', textTransform:'uppercase',
+                 letterSpacing:'0.12em', color:'#666', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+        {title} <span style={{opacity:0.5}}>{open ? '▲' : '▼'}</span>
+      </button>
+      {open && <div style={{ marginTop:'0.55rem' }}>{children}</div>}
+    </div>
+  );
+}
+
+function RadioGroup({ name, options, value, onChange }) {
+  return (
+    <div style={{ marginBottom:'0.7rem' }}>
+      {options.map(([val, label]) => (
+        <label key={val} style={{ display:'flex', alignItems:'center', gap:'0.4rem', marginBottom:'0.22rem', cursor:'pointer', fontSize:'0.7rem' }}>
+          <input type="radio" name={name} value={val} checked={value === val} onChange={() => onChange(val)}
+            style={{ accentColor:'#8b6f47' }} />
+          {label}
+        </label>
+      ))}
+    </div>
+  );
+}
+
+/* ---- Main Panel ---- */
+function TweaksPanel() {
+  const { tweaks, update, reset } = useTweaks();
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      {/* PANEL */}
+      <div style={{
+        position:'fixed', bottom:'5rem', right:'1.5rem',
+        width:'272px', maxHeight:'78vh', overflowY:'auto',
+        background:'#fff', border:'1px solid #e0d9d0', borderRadius:'14px',
+        padding:'1rem 1rem 1.2rem', boxShadow:'0 10px 40px rgba(0,0,0,0.14)',
+        fontSize:'0.78rem', display: open ? 'block' : 'none', zIndex:999,
+        scrollbarWidth:'thin',
+      }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem' }}>
+          <strong style={{ fontSize:'0.88rem', letterSpacing:'0.02em' }}>✦ Tweaks</strong>
+          <button onClick={reset}
+            style={{ fontSize:'0.63rem', background:'none', border:'1px solid #ccc', borderRadius:'5px',
+                     padding:'0.18rem 0.55rem', cursor:'pointer', color:'#888' }}>
+            Reset
+          </button>
+        </div>
+
+        {/* COLORS */}
+        <Accordion title="🎨 Colors">
+          <div style={{ display:'flex', flexWrap:'wrap', gap:'0.35rem', marginBottom:'0.8rem' }}>
+            {['classic','cream','mist','moss','dark'].map(p => (
+              <button key={p} onClick={() => update('palette', p)}
+                style={{ fontSize:'0.63rem', padding:'0.22rem 0.55rem',
+                         border: tweaks.palette===p ? '2px solid #8b6f47' : '1px solid #ddd',
+                         borderRadius:'5px', cursor:'pointer',
+                         background: tweaks.palette===p ? '#fdf5ec' : '#fafafa',
+                         fontWeight: tweaks.palette===p ? 700 : 400,
+                         textTransform:'capitalize' }}>
+                {p}
+              </button>
+            ))}
+          </div>
+          <ColorRow label="Background"   value={tweaks.bgColor}      onChange={v => update('bgColor', v)} />
+          <ColorRow label="Body text"    value={tweaks.textColor}    onChange={v => update('textColor', v)} />
+          <ColorRow label="Headings"     value={tweaks.headingColor} onChange={v => update('headingColor', v)} />
+          <ColorRow label="Accent"       value={tweaks.accentColor}  onChange={v => update('accentColor', v)} />
+          <ColorRow label="Border"       value={tweaks.borderColor}  onChange={v => update('borderColor', v)} />
+          <ColorRow label="Footer bg"    value={tweaks.footerBg}     onChange={v => update('footerBg', v)} />
+        </Accordion>
+
+        {/* TYPOGRAPHY */}
+        <Accordion title="✏️ Typography" defaultOpen={false}>
+          <div style={{ fontSize:'0.67rem', opacity:0.6, marginBottom:'0.3rem' }}>Font Pair</div>
+          <RadioGroup name="fp" value={tweaks.fontPair} onChange={v => update('fontPair', v)}
+            options={[['serif-sans','Serif + Sans'],['serif','Serif only'],['sans','Sans only'],['mincho','明朝 + Sans']]} />
+          <Slider label="Base size"       min={13} max={20}  step={1}   value={tweaks.baseSize}       onChange={v=>update('baseSize',v)}       unit="px" />
+          <Slider label="Heading weight"  min={300} max={700} step={100} value={tweaks.headingWeight} onChange={v=>update('headingWeight',v)} />
+          <Slider label="Heading spacing" min={-3} max={15}  step={1}   value={tweaks.headingSpacing} onChange={v=>update('headingSpacing',v)} unit="/100em" />
+          <Slider label="Logo spacing"    min={0}  max={80}  step={1}   value={tweaks.logoSpacing}    onChange={v=>update('logoSpacing',v)}    unit="/100em" />
+        </Accordion>
+
+        {/* LAYOUT */}
+        <Accordion title="📐 Layout" defaultOpen={false}>
+          <Slider label="Content width"   min={720}  max={1280} step={10}  value={tweaks.contentWidth} onChange={v=>update('contentWidth',v)} unit="px" />
+          <Slider label="Section padding" min={3}    max={12}   step={0.5} value={tweaks.sectionPad}   onChange={v=>update('sectionPad',v)}   unit="rem" />
+          <Slider label="Border radius"   min={0}    max={28}   step={1}   value={tweaks.radius}        onChange={v=>update('radius',v)}        unit="px" />
+        </Accordion>
+
+        {/* HERO */}
+        <Accordion title="🖼 Hero" defaultOpen={false}>
+          <Slider label="Height"     min={320} max={820} step={10} value={tweaks.heroHeight}    onChange={v=>update('heroHeight',v)}    unit="px" />
+          <Slider label="Grayscale" min={0}   max={100} step={1}  value={tweaks.heroGrayscale} onChange={v=>update('heroGrayscale',v)} unit="%" />
+          <Slider label="Darkness"  min={0}   max={75}  step={1}  value={tweaks.heroDarkness}  onChange={v=>update('heroDarkness',v)}  unit="%" />
+          <div style={{ fontSize:'0.67rem', opacity:0.6, marginBottom:'0.3rem' }}>Copy Position</div>
+          <RadioGroup name="ha" value={tweaks.heroAlign} onChange={v=>update('heroAlign',v)}
+            options={[['top','Top'],['center','Center'],['bottom','Bottom']]} />
+          <div style={{ fontSize:'0.67rem', opacity:0.6, marginBottom:'0.2rem' }}>Kicker text</div>
+          <input type="text" value={tweaks.heroKicker} onChange={e=>update('heroKicker',e.target.value)}
+            style={{ width:'100%', fontSize:'0.7rem', padding:'0.3rem 0.5rem', border:'1px solid #ddd', borderRadius:'5px', marginBottom:'0.5rem' }} />
+          <div style={{ fontSize:'0.67rem', opacity:0.6, marginBottom:'0.2rem' }}>Title (改行は \\n)</div>
+          <textarea value={tweaks.heroTitle} onChange={e=>update('heroTitle',e.target.value)} rows={3}
+            style={{ width:'100%', fontSize:'0.7rem', padding:'0.3rem 0.5rem', border:'1px solid #ddd', borderRadius:'5px', resize:'vertical', marginBottom:'0.5rem' }} />
+          <div style={{ fontSize:'0.67rem', opacity:0.6, marginBottom:'0.2rem' }}>Sub-copy</div>
+          <input type="text" value={tweaks.heroSub} onChange={e=>update('heroSub',e.target.value)}
+            style={{ width:'100%', fontSize:'0.7rem', padding:'0.3rem 0.5rem', border:'1px solid #ddd', borderRadius:'5px' }} />
+        </Accordion>
+
+        {/* MENU */}
+        <Accordion title="☕ Menu" defaultOpen={false}>
+          <div style={{ fontSize:'0.67rem', opacity:0.6, marginBottom:'0.3rem' }}>Separator style</div>
+          <RadioGroup name="ms" value={tweaks.menuSeparator} onChange={v=>update('menuSeparator',v)}
+            options={[['dashed','Dashed'],['dotted','Dotted'],['solid','Solid'],['none','None']]} />
+          <Slider label="Line height"   min={1.2} max={3}   step={0.1}  value={tweaks.menuLineHeight} onChange={v=>update('menuLineHeight',v)} />
+          <Slider label="Card opacity"  min={0.3} max={1}   step={0.05} value={tweaks.cardOpacity}    onChange={v=>update('cardOpacity',v)} />
+        </Accordion>
+      </div>
+
+      {/* TOGGLE BUTTON */}
+      <button onClick={() => setOpen(!open)}
+        style={{
+          position:'fixed', bottom:'1.5rem', right:'1.5rem',
+          background: open ? '#444' : '#1a1a1a', color:'#fff',
+          border:'none', borderRadius:'50px',
+          padding:'0.6rem 1.3rem', cursor:'pointer',
+          fontSize:'0.78rem', letterSpacing:'0.06em',
+          boxShadow:'0 4px 18px rgba(0,0,0,0.22)',
+          zIndex:1000, transition:'background 0.2s',
+        }}>
+        {open ? '✕ Close' : '✦ Tweaks'}
+      </button>
+    </>
+  );
+}
+
+/* ---- Mount ---- */
+const tweaksRoot = ReactDOM.createRoot(document.getElementById('tweaks-root'));
+tweaksRoot.render(<TweaksPanel />);
+</script>
+
+</body>
+</html>
